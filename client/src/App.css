@@ -1,0 +1,14 @@
+#root {
+    max-width: 1280px;
+    margin: auto;
+}
+
+.inputsOuter {
+    display: flex;
+    justify-content: space-between;
+}
+
+.inputsInner {
+    display: flex;
+    align-items: center;
+}

@@ -1,0 +1,22 @@
+services:
+  server:
+    container_name: weather-server
+    image: weather:server
+    build:
+      context: ./
+      dockerfile: server.dockerfile
+    restart: always
+    ports:
+    - 4444:4000
+
+  nginx:
+    container_name: weather-nginx
+    image: weather:nginx
+    build:
+      context: ./
+      dockerfile: nginx.dockerfile
+    restart: always
+    depends_on:
+    - server
+    ports:
+    - 8888:8000

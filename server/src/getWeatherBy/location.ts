@@ -11,6 +11,9 @@ export const getWeatherByLocation = async (req: any, res: any) => {
         if (!name) {
             return res.status(400).json({ error: '[name] is required' });
         }
+        if (typeof name != 'string' || !name.trim().length) {
+            return res.status(400).json({ error: '[name] must be a non-empty string' });
+        }
 
         // Get [lat] and [lon] by [name]
         let position;
