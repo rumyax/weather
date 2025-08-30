@@ -10,4 +10,6 @@ WORKDIR /app/
 COPY ./server/package*.json ./
 RUN npm ci --omit=dev
 COPY --from=builder /app/dist/ ./dist/
+ARG COMMIT_HASH
+ENV COMMIT_HASH=${COMMIT_HASH}
 ENTRYPOINT npm run start
