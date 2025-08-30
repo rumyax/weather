@@ -1,30 +1,26 @@
 # Basic commands
 
-**Build images and run containers:** `docker compose up --build --detach`
+**Build images and run containers:** `bash ./run.sh -a`
+
+**Or if you wish only to test API without web-interface:** `bash ./run.sh`
 
 **Web-interface is available here:** http://localhost:8888
 
 **API is available here:** http://localhost:4444/api
 
-**Cleanup:** `docker compose down --rmi all`
+**Cleanup:** `bash ./run.sh -c`
 *(stop containers, remove containers, and remove images)*
-
-**If you wish only to test API without web-interface:**
-```bash
-# Build image
-docker build --tag "weather:server" --file "./server.dockerfile" .
-
-# Run container
-docker run --detach --name "weather-server" --publish "4444:4000" weather:server
-
-# Cleanup (stop container, remove container, and remove image)
-docker stop "weather-server"
-docker rm "weather-server"
-docker rmi "weather:server"
-```
 
 _____
 # API
+
+### Check server status
+
+**Method:** `GET`
+
+**Endpoint:** `http://localhost:4444/status`
+
+**Returns:** `{ "status": "ok", "version": "<COMMIT_HASH>" }`
 
 ### Get weather by position (latitude and longitude)
 
@@ -92,7 +88,7 @@ http://localhost:4444/api/getWeatherBy/location?name=boston
     },
     "weather": [
         {
-            "time": "2025-08-25T12:00:00Z", // Temperature is for 12:00 UTC
+            "time": "2025-08-25T12:00:00Z", // Temperature for 14:00 local time
             "temperature": 23.5
         },
         ...
@@ -103,4 +99,4 @@ http://localhost:4444/api/getWeatherBy/location?name=boston
 _____________
 # PLEASE NOTE
 
-The temperature values are provided for 12:00 UTC (GMT+0), not for the local time of the specified location. For example, if you request weather for Belgrade, the temperature corresponds to 12:00 UTC (usually 14:00 local Belgrade time during summer).
+The temperature values are provided for 14:00 local time of the specified location.

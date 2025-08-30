@@ -32,6 +32,5 @@ export const style = {
 
 export const explanation = [
     'Here you can get weather forecast by location name or coordinates (latitude and longitude).',
-    'PLEASE NOTE: the temperature values are provided for 12:00 UTC (GMT+0), not for the local time of the specified location.',
-    'For example, if you request weather for Belgrade, the temperature corresponds to 12:00 UTC (usually 14:00 local Belgrade time during summer).'
+    'PLEASE NOTE: the temperature values are provided for 14:00 local time of the specified location.'
 ];
