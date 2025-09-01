@@ -99,4 +99,4 @@ http://localhost:4444/api/getWeatherBy/location?name=boston
 _____________
 # PLEASE NOTE
 
-The temperature values are provided for 14:00 local time of the specified location.
+The temperature values are provided for 14:00 local time of the specified location; the time is returned as a UTC date string anyway.

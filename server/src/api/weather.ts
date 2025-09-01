@@ -1,8 +1,10 @@
-import { DAY, HOUR, getGmtOffset, interpolate, positiveMod, roundToHundredths, utcMidnight } from '../sources.js';
+import { DAY, HOUR, getCandidates, interpolate, positiveMod, roundToHundredths } from '../sources.js';
 
 const DEFAULT_TARGET = 14 * HOUR; // Local time in ms (since local midnight)
 
 export const weatherAPI = async (lat: number, lon: number, timeSinceLocalMidnight: number = DEFAULT_TARGET) => {
+    timeSinceLocalMidnight = positiveMod(timeSinceLocalMidnight, DAY);
+
     const response = await fetch(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`);
     const result = await response.json();
     const forecast = result.properties.timeseries.map((item: any) => ({
@@ -21,12 +23,9 @@ export const weatherAPI = async (lat: number, lon: number, timeSinceLocalMidnigh
     for (let i = 0; i < forecast.length; i++) {
         const curr = forecast[i];
 
-        // Calculate time in ms since UTC midnight for the current date and location
-        const offset = getGmtOffset(lat, lon, curr.time);
-        const timeSinceUtcMidnight = positiveMod(timeSinceLocalMidnight - offset, DAY);
-
-        // Calculate target time
-        let targetTime = utcMidnight(curr.time) + timeSinceUtcMidnight;
+        // Calculate target time for the current date and location
+        const candidates = getCandidates(lat, lon, curr.time, timeSinceLocalMidnight);
+        let targetTime = candidates.curr;
 
         // If current time is the target time, add it to the result
         if (targetTime == curr.time) { // Check for exact match for each data point
@@ -45,8 +44,8 @@ export const weatherAPI = async (lat: number, lon: number, timeSinceLocalMidnigh
         // the previous time is 18:00 UTC (the previous day, i.e. 6 hours ago);
         // and the target time is 14:00 local time GMT-7, i.e. 21:00 UTC (the current day).
         // So if the target time is more than the current time,
-        // we can reduce the target time by 24 hours without losing anything.
-        if (targetTime > curr.time) targetTime -= DAY;
+        // we can reduce the target time by a day without losing anything.
+        if (targetTime > curr.time) targetTime = candidates.prev;
 
         // Now the target time is always less than the current time.
         if (prev.time < targetTime) {

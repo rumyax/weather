@@ -5,14 +5,11 @@ const MINUTE = 60 * 1000;
 export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 
-// GMT offset depends on location and time of the year (daylight saving time)
-export const getGmtOffset = (lat: number, lon: number, time: number): number => {
-    // Time in ms since epoch
-    const tz = tzlookup(lat, lon);
-    const dtUtc = DateTime.fromMillis(time, { zone: 'UTC' });
-    const dtLocal = dtUtc.setZone(tz);
-    const offsetMinutes = dtLocal.offset;
-    return offsetMinutes * MINUTE;
+export const getCandidates = (lat: number, lon: number, time: number, timeSinceLocalMidnight: number): { curr: number; prev: number } => {
+    const localMidnight = DateTime.fromMillis(time, { zone: tzlookup(lat, lon) }).startOf('day');
+    const curr = localMidnight.plus({ milliseconds: timeSinceLocalMidnight }).toUTC().toMillis();
+    const prev = localMidnight.minus({ days: 1 }).plus({ milliseconds: timeSinceLocalMidnight }).toUTC().toMillis();
+    return { curr, prev };
 };
 
 export const interpolate = (x: number, x0: number, x1: number, y0: number, y1: number): number => {
@@ -23,9 +20,3 @@ export const interpolate = (x: number, x0: number, x1: number, y0: number, y1: n
 export const positiveMod = (a: number, b: number): number => ((a % b) + b) % b;
 
 export const roundToHundredths = (a: number): number => Math.round(a * 100) / 100;
-
-export const utcMidnight = (time: number): number => {
-    const date = new Date(time);
-    date.setUTCHours(0, 0, 0, 0);
-    return date.getTime();
-};
